@@ -1,7 +1,7 @@
 name: MLOps Pipeline
 
 permissions:
-  contents: write
+  contents: read
   packages: write
 
 on:
@@ -44,7 +44,7 @@ jobs:
   build:
     needs: test
 
-    if: github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     runs-on: ubuntu-latest
 
@@ -66,4 +66,5 @@ jobs:
           push: true
 
           tags: |
-            ghcr.io/${{ github.repository_owner }}/iris-api:${{ github.sha }}        
+            ghcr.io/haixon231/iris-api:${{ github.sha }}
+            ghcr.io/haixon231/iris-api:latest
