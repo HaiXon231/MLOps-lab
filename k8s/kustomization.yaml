@@ -10,4 +10,4 @@ resources:
 images:
   - name: iris-api
     newName: ghcr.io/haixon231/iris-api
-    newTag: initial
+    newTag: d264d9fe28e4b0d4596f9ee13bf55f32b650659a
