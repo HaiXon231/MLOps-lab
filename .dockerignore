@@ -1,14 +1,23 @@
 .venv
 .git
 .gitignore
+.github
 
 __pycache__
 *.pyc
+.pytest_cache
 
 notebooks
+docs
+k8s
+tests
 
 artifacts
 mlartifacts
-mlflow.db
+docker-mlflow-data
+*.db
+
+docker-compose.yml
+kubectl
 
 .ipynb_checkpoints

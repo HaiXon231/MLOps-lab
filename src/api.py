@@ -13,7 +13,10 @@ MLFLOW_TRACKING_URI = os.getenv(
 
 mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
 
-MODEL_URI = "models:/iris-classifier@champion"
+MODEL_URI = os.getenv(
+    "MODEL_URI",
+    "models:/iris-classifier@champion",
+)
 
 model = mlflow.sklearn.load_model(MODEL_URI)
 

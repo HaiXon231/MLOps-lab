@@ -1,11 +1,16 @@
 .venv/
 __pycache__/
 *.pyc
+.pytest_cache/
 
 .ipynb_checkpoints/
 
 artifacts/
 mlartifacts/
-mlflow.db
+docker-mlflow-data/
+*.db
+
+# kubectl is a machine-local CLI, not a project artifact.
+/kubectl
 
 docker-mlflow-data/
