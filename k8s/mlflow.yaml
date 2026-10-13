@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mlflow
+  namespace: mlops-demo
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: mlflow
+
+  template:
+    metadata:
+      labels:
+        app: mlflow
+
+    spec:
+      containers:
+        - name: mlflow
+
+          image: ghcr.io/mlflow/mlflow:v3.5.0
+
+          args:
+            - mlflow
+            - server
+
+            - --backend-store-uri
+            - sqlite:////mlflow/mlflow.db
+
+            - --host
+            - 0.0.0.0
+
+            - --port
+            - "5000"
+
+            - --artifacts-destination
+            - /mlflow/artifacts
+
+            - --allowed-hosts
+            - "mlflow,mlflow:5000,localhost:*,127.0.0.1:*"
+
+          ports:
+            - containerPort: 5000
+
+          volumeMounts:
+            - name: mlflow-data
+              mountPath: /mlflow
+
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 15
+            periodSeconds: 10
+
+      volumes:
+        - name: mlflow-data
+          emptyDir: {}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: mlflow
+  namespace: mlops-demo
+
+spec:
+  selector:
+    app: mlflow
+
+  ports:
+    - port: 5000
+      targetPort: 5000
+
+  type: ClusterIP

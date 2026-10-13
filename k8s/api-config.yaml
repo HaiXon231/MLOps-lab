@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: iris-api-config
+  namespace: mlops-demo
+
+data:
+  MLFLOW_TRACKING_URI: "http://mlflow:5000"
