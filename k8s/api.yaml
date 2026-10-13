@@ -21,7 +21,7 @@ spec:
       containers:
         - name: iris-api
 
-          image: iris-api:1.0
+          image: iris-api
           imagePullPolicy: IfNotPresent
 
           ports:

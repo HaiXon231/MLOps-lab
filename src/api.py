@@ -23,9 +23,8 @@ model = mlflow.sklearn.load_model(MODEL_URI)
 
 app = FastAPI(
     title="Iris ML API",
-    version="1.0.0",
+    version="1.1.0",
 )
-
 
 TARGET_NAMES = [
     "setosa",
