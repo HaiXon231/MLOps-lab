@@ -1,0 +1,28 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: mlops-cloud-lab
+  region: ap-southeast-1
+
+iam:
+  podIdentityAssociations:
+    - namespace: mlops-demo
+      serviceAccountName: mlflow-sa
+      roleName: mlops-cloud-lab-mlflow-s3
+
+      permissionPolicy:
+        Version: "2012-10-17"
+
+        Statement:
+          - Effect: Allow
+            Action:
+              - s3:ListBucket
+            Resource: "arn:aws:s3:::mlops-lab-version-1"
+
+          - Effect: Allow
+            Action:
+              - s3:GetObject
+              - s3:PutObject
+              - s3:DeleteObject
+            Resource: "arn:aws:s3:::mlops-lab-version-1/mlflow-artifacts/*"

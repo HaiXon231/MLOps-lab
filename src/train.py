@@ -230,6 +230,7 @@ def main():
             name="model",
             input_example=X_train.head(5),
             registered_model_name=REGISTERED_MODEL_NAME,
+            skops_trusted_types=["sklearn.tree._tree.Tree"],
         )
 
         print("Model logged to MLflow")

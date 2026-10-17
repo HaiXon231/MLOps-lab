@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: iris-api
+  namespace: mlops-demo
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: iris-api
+
+  template:
+    metadata:
+      labels:
+        app: iris-api
+
+    spec:
+      containers:
+        - name: iris-api
+          image: 160616607747.dkr.ecr.ap-southeast-1.amazonaws.com/iris-api:1.0
+          imagePullPolicy: Always
+
+          ports:
+            - containerPort: 8000
+
+          env:
+            - name: MLFLOW_TRACKING_URI
+              value: "http://mlflow:5000"
+
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 10
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 60
+            periodSeconds: 20
+
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "1"
+              memory: "1Gi"
+
+---
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: iris-api
+  namespace: mlops-demo
+
+spec:
+  type: ClusterIP
+
+  selector:
+    app: iris-api
+
+  ports:
+    - port: 8000
+      targetPort: 8000

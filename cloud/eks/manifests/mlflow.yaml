@@ -1,0 +1,113 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: mlflow
+  namespace: mlops-demo
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: mlflow
+
+  template:
+    metadata:
+      labels:
+        app: mlflow
+
+    spec:
+      serviceAccountName: mlflow-sa
+
+      containers:
+        - name: mlflow
+          image: 160616607747.dkr.ecr.ap-southeast-1.amazonaws.com/mlflow-s3:1.0
+          imagePullPolicy: Always
+
+          command:
+            - mlflow
+
+          args:
+            - server
+
+            - --backend-store-uri
+            - sqlite:////mlflow/mlflow.db
+
+            - --serve-artifacts
+
+            - --artifacts-destination
+            - s3://mlops-lab-version-1/mlflow-artifacts
+
+            - --host
+            - 0.0.0.0
+
+            - --port
+            - "5000"
+
+            - --workers
+            - "1"
+
+            - --allowed-hosts
+            - "mlflow,mlflow:5000,mlflow.mlops-demo.svc.cluster.local,mlflow.mlops-demo.svc.cluster.local:5000,localhost:*,127.0.0.1:*"
+
+          env:
+            - name: AWS_DEFAULT_REGION
+              value: ap-southeast-1
+
+          ports:
+            - containerPort: 5000
+
+          volumeMounts:
+            - name: mlflow-data
+              mountPath: /mlflow
+
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+              httpHeaders:
+                - name: Host
+                  value: mlflow
+            initialDelaySeconds: 15
+            periodSeconds: 10
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+              httpHeaders:
+                - name: Host
+                  value: mlflow
+            initialDelaySeconds: 60
+            periodSeconds: 20
+
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "512Mi"
+            limits:
+              cpu: "1"
+              memory: "2Gi"
+
+      volumes:
+        - name: mlflow-data
+          emptyDir: {}
+
+---
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: mlflow
+  namespace: mlops-demo
+
+spec:
+  type: ClusterIP
+
+  selector:
+    app: mlflow
+
+  ports:
+    - port: 5000
+      targetPort: 5000
